@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automatic Plant Watering Bot</title>
+    <style>
+        /* Styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+
+        /* Main heading style */
+        h1 {
+            color: #2d89ef;
+            font-size: 24px; /* Adjusted font size for mobile */
+            margin-bottom: 20px;
+        }
+
+        /* Button styles */
+        .button {
+            padding: 12px 25px; /* Slightly reduced padding for smaller screens */
+            font-size: 16px; /* Adjusted font size */
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            width: 100%; /* Make buttons full width on small screens */
+            max-width: 300px; /* But limit the width on larger screens */
+        }
+        .start {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .stop {
+            background-color: #f44336;
+            color: white;
+        }
+
+        /* Hover effects */
+        .button:hover {
+            opacity: 0.8;
+        }
+
+        /* Sensor data style */
+        .data {
+            font-size: 20px;
+            color: #333;
+            margin: 30px 0;
+        }
+
+        /* Container for buttons and data */
+        .container {
+            background-color: #fff;
+            padding: 15px; /* Adjusted padding */
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 100%; /* Full width on mobile */
+            margin: 0 auto;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 600px) {
+            .container {
+                max-width: 400px; /* Keep max width on larger screens */
+            }
+
+            h1 {
+                font-size: 30px; /* Larger font size for larger screens */
+            }
+
+            .button {
+                font-size: 18px; /* Adjust button size for larger screens */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Automatic Plant Watering Bot</h1>
+
+    <div class="container">
+        <!-- Start Button -->
+        <button class="button start" onclick="startRobot()">Start Robot</button>
+
+        <!-- Stop Button -->
+        <button class="button stop" onclick="stopRobot()">Stop Robot</button>
+
+        <!-- Sensor Data Display -->
+        <div class="data">
+            <p>Distance: <span id="distance">--</span> cm</p>
+            <p>Moisture: <span id="moisture">--</span>%</p>
+        </div>
+    </div>
+
+    <!-- JavaScript Code -->
+    <script>
+        const ESP8266_IP = 'http://your-esp8266-ip';
+
+        function startRobot() {
+            fetch(ESP8266_IP + '/start')
+                .then(response => response.text())
+                .then(data => {
+                    console.log("Robot started:", data);
+                    alert('Robot started');
+                })
+                .catch(error => {
+                    console.error('Error starting robot:', error);
+                    alert('Failed to start the robot. Check ESP8266 connection.');
+                });
+        }
+
+        function stopRobot() {
+            fetch(ESP8266_IP + '/stop')
+                .then(response => response.text())
+                .then(data => {
+                    console.log("Robot stopped:", data);
+                    alert('Robot stopped');
+                })
+                .catch(error => {
+                    console.error('Error stopping robot:', error);
+                    alert('Failed to stop the robot. Check ESP8266 connection.');
+                });
+        }
+
+        function getSensorData() {
+            fetch(ESP8266_IP + '/sensor')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('distance').textContent = data.distance;
+                    document.getElementById('moisture').textContent = data.moisture;
+                })
+                .catch(error => {
+                    console.error('Error fetching sensor data:', error);
+                    alert('Failed to retrieve sensor data. Check ESP8266 connection.');
+                });
+        }
+
+        setInterval(getSensorData, 5000);
+    </script>
+
+</body>
+</html>
+
